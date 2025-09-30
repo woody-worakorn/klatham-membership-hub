@@ -1,12 +1,34 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Shield } from 'lucide-react';
+import { ArrowLeft, Shield, LogOut, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AdminPanel } from '@/components/AdminPanel';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 const Admin = () => {
   const navigate = useNavigate();
+  const { currentUser, logout } = useAuth();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast({
+        title: 'ออกจากระบบสำเร็จ',
+        description: 'ขอบคุณที่ใช้งานระบบ',
+      });
+      navigate('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast({
+        title: 'เกิดข้อผิดพลาด',
+        description: 'ไม่สามารถออกจากระบบได้',
+        variant: 'destructive',
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary-foreground/5 to-primary/10">
@@ -16,6 +38,7 @@ const Admin = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button 
+                type="button"
                 variant="ghost" 
                 size="sm"
                 onClick={() => navigate('/')}
@@ -33,6 +56,29 @@ const Admin = () => {
                   จัดการข้อมูลสมาชิกพรรคกล้าธรรม
                 </p>
               </div>
+            </div>
+            
+            {/* User Info and Logout */}
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <div className="flex items-center gap-2 text-white/90">
+                  <User className="w-4 h-4" />
+                  <span className="text-sm">
+                    {currentUser?.email}
+                  </span>
+                </div>
+                <p className="text-xs text-white/70">ผู้ดูแลระบบ</p>
+              </div>
+              <Button 
+                type="button"
+                variant="ghost" 
+                size="sm"
+                onClick={handleLogout}
+                className="text-white hover:bg-red-500/20 hover:text-red-100"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                ออกจากระบบ
+              </Button>
             </div>
           </div>
         </div>
