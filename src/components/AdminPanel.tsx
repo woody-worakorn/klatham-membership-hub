@@ -177,6 +177,138 @@ export const AdminPanel: React.FC = () => {
     }
   };
 
+  // ฟังก์ชั่นตรวจสอบสถานะการชำระเงิน
+  const checkPaymentStatus = async (chargeId: string) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/check-payment/${chargeId}`);
+      const charge = await response.json();
+      
+      toast({
+        title: 'สถานะการชำระเงิน',
+        description: `สถานะ: ${charge.status === 'successful' ? 'ชำระเงินสำเร็จ' : 
+                      charge.status === 'pending' ? 'รอการชำระเงิน' : 
+                      charge.status === 'failed' ? 'การชำระเงินล้มเหลว' : 
+                      'ไม่ทราบสถานะ'}`
+      });
+      
+      // อัปเดตสถานะในฐานข้อมูลหากจำเป็น
+      if (charge.status === 'successful' && selectedMember?.id) {
+        const memberRef = ref(database, `members/${selectedMember.id}`);
+        await update(memberRef, { paymentStatus: 'completed' });
+      }
+    } catch (error) {
+      console.error('Error checking payment status:', error);
+      toast({
+        title: 'เกิดข้อผิดพลาด',
+        description: 'ไม่สามารถตรวจสอบสถานะการชำระเงินได้',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  // ฟังก์ชั่นดาวน์โหลดใบเสร็จ
+  const downloadPaymentReceipt = async (chargeId: string) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/check-payment/${chargeId}`);
+      const charge = await response.json();
+      
+      if (charge.status === 'successful') {
+        // สร้างใบเสร็จ PDF หรือ HTML
+        generateReceipt(charge, selectedMember);
+      } else {
+        toast({
+          title: 'ไม่สามารถดาวน์โหลดใบเสร็จได้',
+          description: 'การชำระเงินยังไม่สำเร็จ',
+          variant: 'destructive'
+        });
+      }
+    } catch (error) {
+      console.error('Error downloading receipt:', error);
+      toast({
+        title: 'เกิดข้อผิดพลาด',
+        description: 'ไม่สามารถดาวน์โหลดใบเสร็จได้',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  // ฟังก์ชั่นสร้างใบเสร็จ
+  const generateReceipt = (charge: any, member: MemberWithId | null) => {
+    if (!member) return;
+    
+    const receiptHtml = `
+      <!DOCTYPE html>
+      <html lang="th">
+      <head>
+        <meta charset="UTF-8">
+        <title>ใบเสร็จรับเงิน - พรรคกล้าธรรม</title>
+        <style>
+          body { font-family: 'Sarabun', sans-serif; margin: 40px; }
+          .header { text-align: center; margin-bottom: 30px; }
+          .logo { font-size: 24px; font-weight: bold; color: #63D777; }
+          .receipt-title { font-size: 20px; margin: 10px 0; }
+          .content { line-height: 1.6; }
+          .row { display: flex; justify-content: space-between; margin: 8px 0; }
+          .footer { margin-top: 30px; text-align: center; font-size: 12px; color: #666; }
+          .amount { font-size: 18px; font-weight: bold; background: #f0f0f0; padding: 10px; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="logo">พรรคกล้าธรรม</div>
+          <div class="receipt-title">ใบเสร็จรับเงินค่าสมาชิก</div>
+        </div>
+        
+        <div class="content">
+          <div class="row">
+            <span>ชื่อ-นามสกุล:</span>
+            <span>${member.title}${member.firstName} ${member.lastName}</span>
+          </div>
+          <div class="row">
+            <span>เลขประจำตัวประชาชน:</span>
+            <span>${member.idCard}</span>
+          </div>
+          <div class="row">
+            <span>ประเภทสมาชิก:</span>
+            <span>${member.membershipType === 'yearly' ? 'สมาชิกรายปี' : 'สมาชิกตลอดชีพ'}</span>
+          </div>
+          <div class="row">
+            <span>รหัสการชำระเงิน:</span>
+            <span>${chargeId}</span>
+          </div>
+          <div class="row">
+            <span>วันที่ชำระเงิน:</span>
+            <span>${format(new Date(), 'dd MMMM yyyy', { locale: th })}</span>
+          </div>
+          
+          <div class="amount">
+            <div class="row">
+              <span>จำนวนเงิน:</span>
+              <span>${member.membershipType === 'yearly' ? '20' : '200'} บาท</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="footer">
+          <p>พรรคกล้าธรรม - ระบบสมัครสมาชิกออนไลน์</p>
+          <p>ออกใบเสร็จเมื่อ: ${format(new Date(), 'dd MMMM yyyy HH:mm', { locale: th })}</p>
+        </div>
+      </body>
+      </html>
+    `;
+    
+    // เปิดหน้าต่างใหม่และพิมพ์
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(receiptHtml);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => {
+        printWindow.print();
+      }, 250);
+    }
+  };
+
   const MemberDetailDialog = ({ member, isOpen, onClose }: { member: MemberWithId | null, isOpen: boolean, onClose: () => void }) => {
     if (!member) return null;
 
@@ -307,6 +439,70 @@ export const AdminPanel: React.FC = () => {
                   )}
                 </CardContent>
               </Card>
+
+              {/* หลักฐานการชำระเงิน */}
+              {((member as any).chargeId || (member as any).paymentStatus) && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">หลักฐานการชำระเงิน</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium text-muted-foreground">สถานะการชำระเงิน</label>
+                        <div className="mt-1">
+                          {(member as any).paymentStatus === 'completed' ? (
+                            <Badge variant="default" className="bg-green-500">
+                              <CheckCircle className="w-3 h-3 mr-1" />
+                              ชำระเงินแล้ว
+                            </Badge>
+                          ) : (
+                            <Badge variant="secondary">
+                              <Clock className="w-3 h-3 mr-1" />
+                              รอการชำระเงิน
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                      {(member as any).chargeId && (
+                        <div>
+                          <label className="text-sm font-medium text-muted-foreground">รหัสการชำระเงิน</label>
+                          <p className="font-mono text-sm">{(member as any).chargeId}</p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {(member as any).chargeId && (
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-muted-foreground">ตรวจสอบสถานะการชำระเงิน</label>
+                        <div className="flex space-x-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => checkPaymentStatus((member as any).chargeId)}
+                          >
+                            <Search className="w-4 h-4 mr-2" />
+                            ตรวจสอบสถานะ
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => downloadPaymentReceipt((member as any).chargeId)}
+                          >
+                            <Download className="w-4 h-4 mr-2" />
+                            ดาวน์โหลดใบเสร็จ
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="text-xs text-muted-foreground border-t pt-2">
+                      <p>จำนวนเงิน: {member.membershipType === 'yearly' ? '20 บาท' : '200 บาท'}</p>
+                      <p>ช่องทางการชำระ: PromptPay QR Code</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* สถานะและวันที่ */}
               <Card>

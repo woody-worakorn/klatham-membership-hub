@@ -86,23 +86,40 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
 
       {preview ? (
         <Card className="relative overflow-hidden">
-          <div className="aspect-video w-full relative">
+          <div className="w-full relative" style={{ minHeight: '200px' }}>
             <img 
               src={preview} 
               alt="Preview" 
-              className="w-full h-full object-cover"
+              className="w-full h-auto object-contain"
+              style={{ maxHeight: '500px' }}
             />
             <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2">
               <Button
+                type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => window.open(preview, '_blank')}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // สร้าง modal แสดงรูปขยาย
+                  const modal = document.createElement('div');
+                  modal.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4';
+                  modal.onclick = () => modal.remove();
+                  
+                  const modalImg = document.createElement('img');
+                  modalImg.src = preview;
+                  modalImg.className = 'max-w-full max-h-full object-contain rounded-lg';
+                  modalImg.alt = 'รูปภาพขยาย';
+                  
+                  modal.appendChild(modalImg);
+                  document.body.appendChild(modal);
+                }}
                 className="bg-white/20 border-white/30 text-white hover:bg-white/30"
               >
                 <Eye className="w-4 h-4" />
                 ดูรูป
               </Button>
               <Button
+                type="button"
                 variant="outline"
                 size="sm"
                 onClick={handleRemove}

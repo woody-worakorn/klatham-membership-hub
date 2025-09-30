@@ -62,6 +62,9 @@ export interface MembershipData {
   // การต่ออายุ
   membershipType: 'yearly' | 'lifetime';
   
+  // รูปแบบการชำระเงิน
+  paymentMethod: 'cash' | 'promptpay';
+  
   // รูปภาพ
   selfieWithDocumentUrl?: string;
   idCardImageUrl?: string;
@@ -92,6 +95,11 @@ export const NATIONALITIES = [
 ];
 
 export const MEMBERSHIP_TYPES = [
-  { value: 'yearly', label: 'สมัครแบบรายปี 20 บาท/ปี' },
-  { value: 'lifetime', label: 'สมัครแบบตลอดชีพ 200 บาท' }
+  { value: 'lifetime', label: 'สมัครแบบตลอดชีพ 200 บาท' },
+  { value: 'yearly', label: 'สมัครแบบรายปี 20 บาท/ปี' }
+];
+
+export const PAYMENT_METHODS = [
+  { value: 'cash', label: 'ชำระเป็นเงินสด' },
+  { value: 'promptpay', label: 'พร้อมเพย์ (QR Code)' }
 ];

@@ -1,73 +1,68 @@
-# Welcome to your Lovable project
+สร้างเว็บแอพพลิเคชั่น สมัครสมาชิกพรรคกล้าธรรม โดยใช้ Firebase Realtime Database
 
-## Project info
+โดยให้มี feature ของแอพดังต่อไปนี้
 
-**URL**: https://lovable.dev/projects/5052f40e-1fdb-4aac-8b22-504ba4d5e413
+แอพ จะมี 2 ส่วนคือ
+1. ส่วนประชาชนทั่วไปสมัครสมาชิกพรรคกล้าธรรม
+2. ส่วนผู้ดูแลระบบ
 
-## How can I edit this code?
+ส่วนประชาชนทั่วไปสมัครสมาชิกพรรคกล้าธรรม
+    สามารถ เพิ่ม ลบ แก้ไข ผู้สำรวจได้ โดยมีฟิวด์ ดังนี้
+    คำนำหน้าชื่อ (ภาษาไทย) * (Dropdown List มีให้เลือก ดังนี้ นาย, นาง, นางสาว, อื่นๆ กรณีเลือกอื่นๆ ให้ระบุชื่ออื่นๆ ที่ฟิวด์นี้)
+    ชื่อ (ภาษาไทย) *
+    นามสกุล (ภาษาไทย)
+    ศาสนา * (Dropdown List มีให้เลือก ดังนี้ พุทธ, อิสลาม, คริสต์, อื่นๆ กรณีเลือกอื่นๆ ให้ระบุศาสนาอื่นๆ ที่ฟิวด์นี้)
+    สัญชาติ * (Dropdown List มีให้เลือก ดังนี้ สัญชาติไทยโดยกำเนิด (Default), สัญชาติไทยโดยการแปลงสัญชาติซึ่งได้สัญชาติมาแล้วไม่น้อยกว่า 5 ปี)
+    เลขประจําตัวประชาชน *
+    วันที่ออกบัตร * (Date Picker)
+    วันหมดอายุ * (Date Picker)(ให้ตรวจสอบวันหมดอายุต้องมากกว่าวันที่ออกบัตร และต้องน้อยกว่าวันปัจจุบัน)
+    วันเกิด * (Date Picker)(ให้ตรวจสอบอายุจากวันเกิด ต้องมีอายุไม่ต่ำกว่า 18 ปีบริบูรณ์ในวันที่สมัครสมาชิก)
+    ที่อยู่ตามทะเบียนบ้าน เลขที่ *
+    หมู่บ้าน
+    ซอย
+    ถนน
+    หมู่ที่
+    จังหวัด * (Dropdown List https://raw.githubusercontent.com/kongvut/thai-province-data/refs/heads/master/api/latest/province.json)
+    เขต/อําเภอ * (Dropdown List https://raw.githubusercontent.com/kongvut/thai-province-data/refs/heads/master/api/latest/district.json)
+    แขวง/ตำบล * (Dropdown List https://raw.githubusercontent.com/kongvut/thai-province-data/refs/heads/master/api/latest/sub_district.json)
+    รหัสไปรษณีย์ (Auto จาก แขวง/ตำบล)*
 
-There are several ways of editing your application.
+    เบอร์โทรศัพท์ (มือถือ) *
+    อีเมล
+    ความเห็นทางการเมือง (ถ้ามี) (Textarea)
+    รูปแบบการต่ออายุ (Radio Button มีให้เลือก ดังนี้ สมัครแบบรายปี 20 บาท/ปี, สมัครแบบตลอดชีพ 200 บาท)
+    รูปถ่ายตนเองพร้อมเอกสารยืนยันการสมัครที่เขียนข้อความ ข้าพเจ้า (ชื่อ - นามสกุลผู้สมัคร) มีความประสงค์สมัครสมาชิกพรรคกล้าธรรม* (Image Upload พร้อม Preview)
+    รูปบัตรประชาชน * (Image Upload พร้อม Preview)
 
-**Use Lovable**
+    เพิ่มปุ่มบันทึกข้อมูล
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/5052f40e-1fdb-4aac-8b22-504ba4d5e413) and start prompting.
+เพิ่มปุ่มลบข้อมูล
 
-Changes made via Lovable will be committed automatically to this repo.
 
-**Use your preferred IDE**
+ส่วนผู้ดูแลระบบ
+    เป็นส่วนหลังบ้านที่ใช้สำหรับผู้ดูแลระบบ เพื่อบริหารจัดการข้อมูลผู้สมัครสมาชิกพรรคกล้าธรรม
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+สามารถ sync ข้อมูลแบบ realtime กับ firebase
 
-Follow these steps:
+แล้วให้ทำการเชื่อมต่อกับ Firebase Database ด้วย config ดังต่อไปนี้
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyAQThI0MpZzJPr258yFMKXNSZmQRBXLsGI",
+  authDomain: "ktmember-6989e.firebaseapp.com",
+  databaseURL: "https://ktmember-6989e-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "ktmember-6989e",
+  storageBucket: "ktmember-6989e.firebasestorage.app",
+  messagingSenderId: "326700889353",
+  appId: "1:326700889353:web:ed653792db9ea924430fd8",
+  measurementId: "G-WZPB7MSCSZ"
+};
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
 
-# Step 3: Install the necessary dependencies.
-npm i
+ให้ใช้ Firebase JavaScript SDK v11+ with import via CDN (no npm)
+ให้ code HTML มีการ setup Firebase และ Javascript ใน file เดียว
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/5052f40e-1fdb-4aac-8b22-504ba4d5e413) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+สีหลัก #63D777
+สีรอง #061C73
+สีไฮไลต์ #D7A43B

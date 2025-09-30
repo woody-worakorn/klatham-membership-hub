@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import 'antd/dist/reset.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -152,4 +155,81 @@ All colors MUST be HSL. กล้าธรรมพาร์ตี้ theme colo
   }
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100;200;300;400;500;600;700;800;900&display=swap');
+/* Kla Tham DatePicker Styles */
+.kla-tham-datepicker .ant-picker-dropdown {
+  border-radius: 8px !important;
+  box-shadow: 0 10px 30px -10px rgba(99, 215, 119, 0.3) !important;
+}
+
+.kla-tham-datepicker .ant-picker-header {
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.kla-tham-datepicker .ant-picker-header-view button {
+  color: #061C73 !important;
+  font-weight: 600 !important;
+}
+
+.kla-tham-datepicker .ant-picker-header-view button:hover {
+  color: #63D777 !important;
+}
+
+.kla-tham-datepicker .ant-picker-prev-icon,
+.kla-tham-datepicker .ant-picker-next-icon,
+.kla-tham-datepicker .ant-picker-super-prev-icon,
+.kla-tham-datepicker .ant-picker-super-next-icon {
+  color: #061C73 !important;
+}
+
+.kla-tham-datepicker .ant-picker-prev-icon:hover,
+.kla-tham-datepicker .ant-picker-next-icon:hover,
+.kla-tham-datepicker .ant-picker-super-prev-icon:hover,
+.kla-tham-datepicker .ant-picker-super-next-icon:hover {
+  color: #63D777 !important;
+}
+
+.kla-tham-datepicker .ant-picker-cell {
+  color: #061C73 !important;
+}
+
+.kla-tham-datepicker .ant-picker-cell:hover .ant-picker-cell-inner {
+  background-color: rgba(99, 215, 119, 0.1) !important;
+  color: #63D777 !important;
+}
+
+.kla-tham-datepicker .ant-picker-cell-selected .ant-picker-cell-inner {
+  background-color: #63D777 !important;
+  color: white !important;
+}
+
+.kla-tham-datepicker .ant-picker-cell-today .ant-picker-cell-inner {
+  border-color: #D7A43B !important;
+  color: #D7A43B !important;
+  font-weight: 600 !important;
+}
+
+.kla-tham-datepicker .ant-picker-today-btn {
+  color: #63D777 !important;
+}
+
+.kla-tham-datepicker .ant-picker-today-btn:hover {
+  color: #D7A43B !important;
+}
+
+.kla-tham-datepicker .ant-picker-cell-disabled .ant-picker-cell-inner {
+  color: #cbd5e1 !important;
+  background-color: #f8fafc !important;
+}
+
+.kla-tham-datepicker .ant-picker-footer {
+  border-top: 1px solid #e2e8f0 !important;
+}
+
+/* Icon styling */
+.kla-tham-datepicker .ant-picker-suffix {
+  color: #64748b !important;
+}
+
+.kla-tham-datepicker .ant-picker-suffix:hover {
+  color: #63D777 !important;
+}
