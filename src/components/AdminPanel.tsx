@@ -495,7 +495,7 @@ export const AdminPanel: React.FC = () => {
           <div class="form-row">
             <div class="form-field">
               <label>ศาสนา</label>
-              <span class="value">${member.religion || 'พุทธ'}</span>
+              <span class="value">${member.religion || '-'}</span>
             </div>
             <div class="form-field last-in-row">
               <span class="checkbox checked"></span>
@@ -552,26 +552,26 @@ export const AdminPanel: React.FC = () => {
           <div class="form-row">
             <div class="form-field">
               <label>ที่อยู่ตามทะเบียนบ้าน บ้านเลขที่</label>
-              <span class="value" style="min-width: 100px;">${member.houseNumber || ''}</span>
+              <span class="value" style="min-width: 100px;">${member.houseNumber || '-'}</span>
             </div>
             <div class="form-field">
               <label>หมู่บ้าน</label>
-              <span class="value" style="min-width: 150px;">${member.village || ''}</span>
+              <span class="value" style="min-width: 150px;">${member.village || '-'}</span>
             </div>
             <div class="form-field last-in-row">
               <label>ซอย</label>
-              <span class="value">${member.soi || ''}</span>
+              <span class="value">${member.soi || '-'}</span>
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-field">
               <label>ถนน</label>
-              <span class="value" style="min-width: 120px;">${member.road || ''}</span>
+              <span class="value" style="min-width: 120px;">${member.road || '-'}</span>
             </div>
             <div class="form-field">
               <label>หมู่ที่</label>
-              <span class="value" style="min-width: 60px;">${member.moo || ''}</span>
+              <span class="value" style="min-width: 60px;">${member.moo || '-'}</span>
             </div>
             <div class="form-field last-in-row">
               <label>แขวง/ตำบล</label>
@@ -601,11 +601,11 @@ export const AdminPanel: React.FC = () => {
             </div>
             <div class="form-field">
               <label>Email</label>
-              <span class="value" style="min-width: 180px;">${member.email || ''}</span>
+              <span class="value" style="min-width: 180px;">${member.email || '-'}</span>
             </div>
             <div class="form-field last-in-row">
               <label>ID Line</label>
-              <span class="value">${(member as any).lineId || ''}</span>
+              <span class="value">${member.lineId || '-'}</span>
             </div>
           </div>
 
@@ -615,7 +615,7 @@ export const AdminPanel: React.FC = () => {
             </div>
           </div>
           <div style="border-bottom: 1px dotted #17365D; min-height: 60px; padding: 5px;">
-            ${member.politicalOpinion || ''}
+            ${member.politicalOpinion || '-'}
           </div>
 
           <!-- Declaration Section -->
@@ -1054,14 +1054,18 @@ export const AdminPanel: React.FC = () => {
                 <CardHeader>
                   <CardTitle className="text-lg">ข้อมูลติดต่อ</CardTitle>
                 </CardHeader>
-                <CardContent className="grid grid-cols-2 gap-4">
+                <CardContent className="grid grid-cols-3 gap-4">
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">เบอร์โทรศัพท์</label>
                     <p>{member.phone}</p>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">อีเมล</label>
-                    <p>{member.email || 'ไม่ระบุ'}</p>
+                    <p>{member.email || '-'}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">ID Line</label>
+                    <p>{member.lineId || '-'}</p>
                   </div>
                   {member.politicalOpinion && (
                     <div className="col-span-2">

@@ -100,6 +100,7 @@ const createMembershipSchema = (currentMemberId?: string) => z.object({
   postalCode: z.string().min(1, 'รหัสไปรษณีย์จะถูกกรอกอัตโนมัติ'),
   phone: z.string().regex(/^(\+66|0)[0-9]{8,9}$/, 'กรุณากรอกเบอร์โทรศัพท์ที่ถูกต้อง'),
   email: z.string().email('กรุณากรอกอีเมลที่ถูกต้อง').optional().or(z.literal('')),
+  lineId: z.string().optional(),
   politicalOpinion: z.string().optional(),
   membershipType: z.enum(['yearly', 'lifetime']),
   paymentMethod: z.enum(['cash', 'promptpay']),
@@ -286,6 +287,7 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({
       postalCode: initialData?.postalCode || '',
       phone: initialData?.phone || '',
       email: initialData?.email || '',
+      lineId: initialData?.lineId || '',
       politicalOpinion: initialData?.politicalOpinion || '',
       membershipType: (initialData?.membershipType as 'yearly' | 'lifetime') || 'lifetime',
       paymentMethod: (initialData as any)?.paymentMethod || 'cash',
@@ -445,6 +447,7 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({
     form.setValue('moo', '7');
     form.setValue('phone', '0812345678');
     form.setValue('email', 'demo@example.com');
+    form.setValue('lineId', '@demouser');
     form.setValue('politicalOpinion', 'สนับสนุนการพัฒนาประเทศแบบยั่งยืน');
     form.setValue('membershipType', 'lifetime');
     form.setValue('paymentMethod', 'cash');
@@ -479,6 +482,7 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({
         postalCode: data.postalCode,
         phone: data.phone,
         email: data.email,
+        lineId: data.lineId,
         politicalOpinion: data.politicalOpinion,
         membershipType: data.membershipType,
         paymentMethod: data.paymentMethod,
@@ -1079,7 +1083,7 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({
               <CardDescription>กรุณากรอกข้อมูลสำหรับการติดต่อ</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <FormField
                   control={form.control}
                   name="phone"
@@ -1102,6 +1106,20 @@ export const MembershipForm: React.FC<MembershipFormProps> = ({
                       <FormLabel>อีเมล</FormLabel>
                       <FormControl>
                         <Input placeholder="example@email.com" type="email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="lineId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>ID Line</FormLabel>
+                      <FormControl>
+                        <Input placeholder="@username หรือ Line ID" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

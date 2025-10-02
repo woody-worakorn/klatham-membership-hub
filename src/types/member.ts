@@ -57,6 +57,7 @@ export interface MembershipData {
   // ข้อมูลติดต่อ
   phone: string;
   email?: string;
+  lineId?: string;
   politicalOpinion?: string;
   
   // การต่ออายุ
