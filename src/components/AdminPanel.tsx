@@ -143,7 +143,7 @@ export const AdminPanel: React.FC = () => {
     ];
 
     const csvData = filteredMembers.map(member => [
-      `${member.title}${member.firstName} ${member.lastName}`,
+      `${!['นาย', 'นาง', 'นางสาว'].includes(member.title) ? ((member as any).titleOther || member.title) : member.title}${member.firstName} ${member.lastName}`,
       member.idCard,
       member.phone,
       member.email || '',
@@ -243,6 +243,10 @@ export const AdminPanel: React.FC = () => {
         <meta charset="UTF-8">
         <title>ใบสมัครสมาชิกพรรคกล้าธรรม - ${member.firstName} ${member.lastName}</title>
         <style>
+          @font-face {
+            font-family: 'JenjrusChan';
+            src: url('/JenjrusChan.otf') format('opentype');
+          }
           @media print {
             body { -webkit-print-color-adjust: exact; }
             @page { size: A4; margin: 15mm; }
@@ -250,106 +254,117 @@ export const AdminPanel: React.FC = () => {
           body { 
             font-family: 'Sarabun', 'TH SarabunPSK', 'Arial', sans-serif; 
             margin: 0;
-            padding: 20px;
-            font-size: 14px;
-            line-height: 1.5;
+            padding: 10px;
+            font-size: 12px;
+            line-height: 1.2;
             color: #000;
+          }
+          .signature-name {
+            font-family: 'JenjrusChan', 'Sarabun', 'TH SarabunPSK', 'Arial', sans-serif;
+            font-size: 28px;
+            margin: 0 40px;
+            font-weight: bold;
+            color: #2D3748;
+            letter-spacing: 1px;
           }
           .container {
             max-width: 210mm;
             margin: 0 auto;
             background: white;
-            padding: 20px;
+            padding: 10px;
           }
           .header {
             text-align: center;
-            border: 3px solid #1e40af;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 10px;
+            border: 3px solid #17365D;
+            padding: 8px 8px 15px 8px;
+            
+            border-radius: 6px;
             position: relative;
           }
           .logo-section {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 15px;
+
           }
           .logo {
-            width: 100px;
-            height: 100px;
-            border: 3px solid #1e40af;
-            border-radius: 50%;
+            width: 80px;
+            height: 80px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-            color: white;
-            flex-direction: column;
-          }
-          .logo-text {
-            font-size: 24px;
-            font-weight: bold;
-          }
-          .logo-subtext {
-            font-size: 12px;
-            margin-top: 5px;
+            margin-left: 15px;
           }
           .address-box {
             text-align: left;
-            font-size: 12px;
+            font-size: 11px;
             flex: 1;
-            margin-left: 20px;
+            margin-left: 15px;
           }
           .photo-box {
-            width: 100px;
-            height: 120px;
-            border: 2px solid #000;
+            width: 80px;
+            height: 100px;
+            border: 2px solid #17365D;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 11px;
+            font-size: 10px;
             text-align: center;
             background: #f5f5f5;
+            overflow: hidden;
+          }
+          .photo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
           }
           .title {
             font-size: 18px;
             font-weight: bold;
-            color: #1e40af;
-            margin: 10px 0;
+            color: #17365D;
+            margin: 5px 0;
           }
           .section-title {
-            background: #1e40af;
+            background: #17365D;
             color: white;
-            padding: 8px 15px;
+            padding: 4px 10px;
             font-weight: bold;
-            margin: 20px 0 10px 0;
-            border-radius: 5px;
-            font-size: 15px;
+            margin: 10px 0 6px 0;
+            border-radius: 3px;
+            font-size: 13px;
           }
           .form-row {
             display: flex;
-            margin-bottom: 12px;
+            margin-bottom: 6px;
             align-items: center;
           }
           .form-field {
-            margin-right: 20px;
+            margin-right: 15px;
             display: flex;
             align-items: center;
           }
           .form-field label {
-            margin-right: 8px;
+            margin-right: 6px;
             white-space: nowrap;
+            font-weight: bold;
+            font-size: 11px;
           }
           .form-field .value {
-            border-bottom: 1px dotted #000;
+            border-bottom: 1px dotted #17365D;
             min-width: 150px;
             padding: 0 5px;
+          }
+          .form-field.last-in-row {
+            flex: 1;
+          }
+          .form-field.last-in-row .value {
+            flex: 1;
+            min-width: auto;
           }
           .checkbox {
             width: 16px;
             height: 16px;
-            border: 2px solid #000;
+            border: 2px solid #17365D;
             display: inline-block;
             margin: 0 5px;
             vertical-align: middle;
@@ -370,7 +385,7 @@ export const AdminPanel: React.FC = () => {
           .id-box {
             width: 25px;
             height: 30px;
-            border: 2px solid #000;
+            border: 2px solid #17365D;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -380,19 +395,36 @@ export const AdminPanel: React.FC = () => {
           .divider {
             width: 10px;
             height: 2px;
-            background: #000;
+            background: #17365D;
             margin: 0 5px;
             align-self: center;
           }
           .signature-section {
-            margin-top: 30px;
+            margin-top: 15px;
             display: flex;
             justify-content: space-between;
+            align-items: center;
           }
           .signature-box {
             text-align: center;
             flex: 1;
-            margin: 0 20px;
+            margin: 0 15px;
+          }
+          .id-card-box {
+            width: 320px;
+            height: 180px;
+            border: 2px solid #17365D;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f5f5f5;
+            overflow: hidden;
+            margin-right: 15px;
+          }
+          .id-card-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
           }
           .signature-line {
             border-bottom: 1px dotted #000;
@@ -400,25 +432,17 @@ export const AdminPanel: React.FC = () => {
             margin: 40px auto 5px auto;
           }
           .declaration {
-            margin: 15px 0;
-            line-height: 1.8;
+            margin: 10px 0;
+            line-height: 1.4;
             text-align: justify;
-            font-size: 13px;
+            font-size: 11px;
           }
           .approval-section {
-            margin-top: 30px;
-            border: 2px solid #1e40af;
-            padding: 15px;
-            border-radius: 5px;
+            margin-top: 15px;
+            border: 2px solid #17365D;
+            padding: 8px;
+            border-radius: 3px;
             background: #f8fafc;
-          }
-          .footer-note {
-            text-align: right;
-            margin-top: 20px;
-            font-size: 12px;
-            color: #666;
-            border-top: 1px solid #ddd;
-            padding-top: 10px;
           }
         </style>
       </head>
@@ -428,12 +452,15 @@ export const AdminPanel: React.FC = () => {
           <div class="header">
             <div class="logo-section">
               <div class="logo">
-                <div class="logo-text">กธ</div>
-                <div class="logo-subtext">KLATHAM</div>
-                <div class="logo-subtext">กล้าธรรม</div>
+                <img 
+                  src="/KLATHAM-LOGO.png" 
+                  alt="โลโก้พรรคกล้าธรรม" 
+                  style="width: 100px; height: 100px; object-fit: contain;"
+                />
               </div>
               
               <div class="address-box">
+                <div class="title">ใบสมัครสมาชิกพรรคกล้าธรรม</div>
                 <strong>สำนักงานใหญ่พรรคกล้าธรรม</strong><br>
                 เลขที่ 130/1 ซอยรัชดาภิเษก 54 ถนนรัชดาภิเษก<br>
                 แขวงลาดยาว เขตจตุจักร<br>
@@ -441,13 +468,14 @@ export const AdminPanel: React.FC = () => {
               </div>
               
               <div class="photo-box">
-                รูปถ่ายผู้สมัคร<br>
-                ขนาด 1 นิ้ว<br>
-                มีต่อด้านหลัง
+                ${member.selfieWithDocumentUrl ? 
+                  `<img src="${member.selfieWithDocumentUrl}" alt="รูปถ่ายตนเองพร้อมเอกสาร" />` : 
+                  'รูปถ่ายผู้สมัคร<br>ขนาด 1 นิ้ว<br>มีต่อด้านหลัง'
+                }
               </div>
             </div>
             
-            <div class="title">ใบสมัครสมาชิกพรรคกล้าธรรม</div>
+            
           </div>
 
           <!-- Personal Information Section -->
@@ -455,22 +483,12 @@ export const AdminPanel: React.FC = () => {
           
           <div class="form-row">
             <div class="form-field">
-              <label>นาย/นาง/นางสาว/อื่นๆ</label>
-              <span class="checkbox ${member.title === 'นาย' ? 'checked' : ''}"></span> นาย
-              <span class="checkbox ${member.title === 'นาง' ? 'checked' : ''}"></span> นาง
-              <span class="checkbox ${member.title === 'นางสาว' ? 'checked' : ''}"></span> นางสาว
-              <span class="checkbox ${!['นาย', 'นาง', 'นางสาว'].includes(member.title) ? 'checked' : ''}"></span> อื่นๆ
-            </div>
-          </div>
-          
-          <div class="form-row">
-            <div class="form-field">
               <label>ชื่อ</label>
-              <span class="value" style="min-width: 250px;">${member.firstName}</span>
+              <span class="value" style="min-width: 250px;">${!['นาย', 'นาง', 'นางสาว'].includes(member.title) ? ((member as any).titleOther || member.title) : member.title}${member.firstName}</span>
             </div>
-            <div class="form-field">
+            <div class="form-field last-in-row">
               <label>นามสกุล</label>
-              <span class="value" style="min-width: 250px;">${member.lastName}</span>
+              <span class="value">${member.lastName}</span>
             </div>
           </div>
 
@@ -479,7 +497,7 @@ export const AdminPanel: React.FC = () => {
               <label>ศาสนา</label>
               <span class="value">${member.religion || 'พุทธ'}</span>
             </div>
-            <div class="form-field">
+            <div class="form-field last-in-row">
               <span class="checkbox checked"></span>
               <label>สัญชาติไทยโดยการเกิด</label>
               <span class="checkbox"></span>
@@ -503,9 +521,9 @@ export const AdminPanel: React.FC = () => {
           <div class="form-row">
             <div class="form-field">
               <label>วันออกบัตร</label>
-              <span class="value">${(member as any).idCardIssueDate || '_______________'}</span>
+              <span class="value">${member.cardExpiryDate ? format(new Date(new Date(member.cardExpiryDate).getTime() - (10 * 365 * 24 * 60 * 60 * 1000)), 'dd/MM/yyyy') : '_______________'}</span>
             </div>
-            <div class="form-field">
+            <div class="form-field last-in-row">
               <label>วันหมดอายุ</label>
               <span class="value">${member.cardExpiryDate ? format(new Date(member.cardExpiryDate), 'dd/MM/yyyy') : '_______________'}</span>
             </div>
@@ -524,7 +542,7 @@ export const AdminPanel: React.FC = () => {
               <label>พ.ศ.</label>
               <span class="value">${member.birthDate ? (new Date(member.birthDate).getFullYear() + 543) : '______'}</span>
             </div>
-            <div class="form-field">
+            <div class="form-field last-in-row">
               <label>อายุ</label>
               <span class="value">${member.birthDate ? (new Date().getFullYear() - new Date(member.birthDate).getFullYear()) : '____'}</span>
               <label>ปี</label>
@@ -532,24 +550,32 @@ export const AdminPanel: React.FC = () => {
           </div>
 
           <div class="form-row">
-            <div class="form-field" style="width: 100%;">
+            <div class="form-field">
               <label>ที่อยู่ตามทะเบียนบ้าน บ้านเลขที่</label>
               <span class="value" style="min-width: 100px;">${member.houseNumber || ''}</span>
+            </div>
+            <div class="form-field">
               <label>หมู่บ้าน</label>
               <span class="value" style="min-width: 150px;">${member.village || ''}</span>
+            </div>
+            <div class="form-field last-in-row">
               <label>ซอย</label>
-              <span class="value" style="min-width: 100px;">${member.soi || ''}</span>
+              <span class="value">${member.soi || ''}</span>
             </div>
           </div>
 
           <div class="form-row">
-            <div class="form-field" style="width: 100%;">
+            <div class="form-field">
               <label>ถนน</label>
               <span class="value" style="min-width: 120px;">${member.road || ''}</span>
+            </div>
+            <div class="form-field">
               <label>หมู่ที่</label>
               <span class="value" style="min-width: 60px;">${member.moo || ''}</span>
+            </div>
+            <div class="form-field last-in-row">
               <label>แขวง/ตำบล</label>
-              <span class="value" style="min-width: 150px;">${member.subDistrict}</span>
+              <span class="value">${member.subDistrict}</span>
             </div>
           </div>
 
@@ -562,7 +588,7 @@ export const AdminPanel: React.FC = () => {
               <label>จังหวัด</label>
               <span class="value" style="min-width: 150px;">${member.province}</span>
             </div>
-            <div class="form-field">
+            <div class="form-field last-in-row">
               <label>รหัสไปรษณีย์</label>
               <span class="value">${member.postalCode}</span>
             </div>
@@ -570,32 +596,25 @@ export const AdminPanel: React.FC = () => {
 
           <div class="form-row">
             <div class="form-field">
-              <label>เบอร์โทรศัพท์ (มือถือ)</label>
+              <label>เบอร์โทรศัพท์</label>
               <span class="value" style="min-width: 150px;">${member.phone}</span>
             </div>
             <div class="form-field">
-              <label>เบอร์โทรศัพท์ (บ้าน)</label>
-              <span class="value" style="min-width: 150px;">${(member as any).homePhone || ''}</span>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-field">
               <label>Email</label>
-              <span class="value" style="min-width: 250px;">${member.email || ''}</span>
+              <span class="value" style="min-width: 180px;">${member.email || ''}</span>
             </div>
-            <div class="form-field">
+            <div class="form-field last-in-row">
               <label>ID Line</label>
-              <span class="value" style="min-width: 150px;">${(member as any).lineId || ''}</span>
+              <span class="value">${(member as any).lineId || ''}</span>
             </div>
           </div>
 
           <div class="form-row">
-            <div class="form-field" style="width: 100%;">
+            <div class="form-field last-in-row" style="width: 100%;">
               <label>ความคิดเห็นทางการเมืองของผู้สมัคร (ถ้ามี)</label>
             </div>
           </div>
-          <div style="border-bottom: 1px dotted #000; min-height: 60px; padding: 5px;">
+          <div style="border-bottom: 1px dotted #17365D; min-height: 60px; padding: 5px;">
             ${member.politicalOpinion || ''}
           </div>
 
@@ -618,10 +637,16 @@ export const AdminPanel: React.FC = () => {
           </div>
 
           <div class="signature-section">
+            <div class="id-card-box">
+              ${member.idCardImageUrl ? 
+                `<img src="${member.idCardImageUrl}" alt="รูปบัตรประจำตัวประชาชน" />` : 
+                '<div style="text-align: center; font-size: 16px; font-weight: bold;">รูปบัตรประจำตัว<br>ประชาชน</div>'
+              }
+            </div>
             <div class="signature-box">
-              <div>ลงนาม _________________________________ ผู้สมัคร</div>
-              <div style="margin-top: 10px;">( ${member.firstName} ${member.lastName} )</div>
-              <div style="margin-top: 10px;">วันที่ _______ เดือน ______________ พ.ศ. _______</div>
+              <div>ลงนาม <span class="signature-name">${member.firstName} ${member.lastName}</span> ผู้สมัคร</div>
+              <div style="margin-top: 10px;">( ${!['นาย', 'นาง', 'นางสาว'].includes(member.title) ? ((member as any).titleOther || member.title) : member.title}${member.firstName} ${member.lastName} )</div>
+              <div style="margin-top: 10px;">วันที่ ${format(new Date(member.createdAt), 'dd', { locale: th })} เดือน ${format(new Date(member.createdAt), 'MMMM', { locale: th })} พ.ศ. ${new Date(member.createdAt).getFullYear() + 543}</div>
             </div>
           </div>
 
@@ -642,23 +667,6 @@ export const AdminPanel: React.FC = () => {
               </div>
             </div>
 
-            <div style="text-align: center; margin-top: 20px; padding: 10px; border: 2px solid #1e40af; border-radius: 5px; background: ${
-              member.status === 'approved' ? '#C6F6D5' : 
-              member.status === 'pending' ? '#FEFCBF' : 
-              '#FED7D7'
-            };">
-              <strong style="font-size: 16px;">สถานะการสมัคร: ${
-                member.status === 'approved' ? 'อนุมัติแล้ว ✓' : 
-                member.status === 'pending' ? 'รอดำเนินการ' : 
-                'ปฏิเสธ'
-              }</strong>
-            </div>
-          </div>
-
-          <div class="footer-note">
-            <strong>หมายเหตุ:</strong> มีต่อด้านหลัง<br>
-            พิมพ์เมื่อ: ${format(new Date(), 'dd MMMM yyyy HH:mm', { locale: th })} น.<br>
-            เอกสารนี้สร้างจากระบบจัดการสมาชิกพรรคกล้าธรรม
           </div>
         </div>
       </body>
@@ -850,7 +858,7 @@ export const AdminPanel: React.FC = () => {
             ${members.map((member, index) => `
               <tr>
                 <td style="text-align: center;">${index + 1}</td>
-                <td>${member.title}${member.firstName} ${member.lastName}</td>
+                <td>${!['นาย', 'นาง', 'นางสาว'].includes(member.title) ? ((member as any).titleOther || member.title) : member.title} ${member.firstName} ${member.lastName}</td>
                 <td style="font-family: monospace;">${member.idCard}</td>
                 <td>${member.phone}</td>
                 <td style="font-size: 10px;">
@@ -929,7 +937,7 @@ export const AdminPanel: React.FC = () => {
         <div class="content">
           <div class="row">
             <span>ชื่อ-นามสกุล:</span>
-            <span>${member.title}${member.firstName} ${member.lastName}</span>
+            <span>${!['นาย', 'นาง', 'นางสาว'].includes(member.title) ? ((member as any).titleOther || member.title) : member.title}${member.firstName} ${member.lastName}</span>
           </div>
           <div class="row">
             <span>เลขประจำตัวประชาชน:</span>
@@ -1336,7 +1344,7 @@ export const AdminPanel: React.FC = () => {
               {filteredMembers.map((member) => (
                 <TableRow key={member.id}>
                   <TableCell className="font-medium">
-                    {member.title}{member.firstName} {member.lastName}
+                    {!['นาย', 'นาง', 'นางสาว'].includes(member.title) ? ((member as any).titleOther || member.title) : member.title}{member.firstName} {member.lastName}
                   </TableCell>
                   <TableCell>{member.idCard}</TableCell>
                   <TableCell>{member.phone}</TableCell>
