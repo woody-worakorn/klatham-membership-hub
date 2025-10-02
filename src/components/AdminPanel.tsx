@@ -234,242 +234,432 @@ export const AdminPanel: React.FC = () => {
     }
   };
 
-  // ฟังก์ชั่นสร้าง PDF รายละเอียดสมาชิก
+  // ฟังก์ชันสร้าง PDF ใบสมัครสมาชิกแบบฟอร์ม
   const generateMemberPDF = (member: MemberWithId) => {
-    const memberHtml = `
+    const formHtml = `
       <!DOCTYPE html>
       <html lang="th">
       <head>
         <meta charset="UTF-8">
-        <title>รายละเอียดสมาชิก - ${member.title}${member.firstName} ${member.lastName}</title>
+        <title>ใบสมัครสมาชิกพรรคกล้าธรรม - ${member.firstName} ${member.lastName}</title>
         <style>
           @media print {
             body { -webkit-print-color-adjust: exact; }
-            .no-print { display: none !important; }
+            @page { size: A4; margin: 15mm; }
           }
           body { 
-            font-family: 'Sarabun', 'Arial', sans-serif; 
-            margin: 40px; 
-            line-height: 1.6;
-            color: #333;
-          }
-          .header { 
-            text-align: center; 
-            margin-bottom: 40px; 
-            padding-bottom: 20px;
-            border-bottom: 3px solid #63D777;
-          }
-          .logo { 
-            font-size: 28px; 
-            font-weight: bold; 
-            color: #63D777; 
-            margin-bottom: 10px;
-          }
-          .title { 
-            font-size: 24px; 
-            margin: 10px 0; 
-            color: #2D3748;
-          }
-          .subtitle {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 20px;
-          }
-          .section { 
-            margin: 30px 0; 
+            font-family: 'Sarabun', 'TH SarabunPSK', 'Arial', sans-serif; 
+            margin: 0;
             padding: 20px;
-            border: 1px solid #E2E8F0;
-            border-radius: 8px;
-            background: #F7FAFC;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #000;
           }
-          .section-title { 
-            font-size: 18px; 
-            font-weight: bold; 
-            color: #2D3748;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #63D777;
-          }
-          .info-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 15px; 
-            margin: 15px 0;
-          }
-          .info-item { 
-            margin: 8px 0; 
-          }
-          .label { 
-            font-weight: bold; 
-            color: #4A5568;
-            display: inline-block;
-            min-width: 140px;
-          }
-          .value { 
-            color: #2D3748;
-          }
-          .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            text-transform: uppercase;
-          }
-          .status-approved { background: #C6F6D5; color: #22543D; }
-          .status-pending { background: #FEFCBF; color: #744210; }
-          .status-rejected { background: #FED7D7; color: #742A2A; }
-          .footer { 
-            margin-top: 40px; 
-            text-align: center; 
-            font-size: 12px; 
-            color: #666;
-            border-top: 1px solid #E2E8F0;
-            padding-top: 20px;
-          }
-          .address { 
+          .container {
+            max-width: 210mm;
+            margin: 0 auto;
             background: white;
-            padding: 15px;
-            border-radius: 6px;
-            border-left: 4px solid #63D777;
+            padding: 20px;
           }
-          .document-info {
-            background: #EDF2F7;
+          .header {
+            text-align: center;
+            border: 3px solid #1e40af;
             padding: 15px;
-            border-radius: 6px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            position: relative;
+          }
+          .logo-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+          }
+          .logo {
+            width: 100px;
+            height: 100px;
+            border: 3px solid #1e40af;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: white;
+            flex-direction: column;
+          }
+          .logo-text {
+            font-size: 24px;
+            font-weight: bold;
+          }
+          .logo-subtext {
+            font-size: 12px;
+            margin-top: 5px;
+          }
+          .address-box {
+            text-align: left;
+            font-size: 12px;
+            flex: 1;
+            margin-left: 20px;
+          }
+          .photo-box {
+            width: 100px;
+            height: 120px;
+            border: 2px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            text-align: center;
+            background: #f5f5f5;
+          }
+          .title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1e40af;
             margin: 10px 0;
+          }
+          .section-title {
+            background: #1e40af;
+            color: white;
+            padding: 8px 15px;
+            font-weight: bold;
+            margin: 20px 0 10px 0;
+            border-radius: 5px;
+            font-size: 15px;
+          }
+          .form-row {
+            display: flex;
+            margin-bottom: 12px;
+            align-items: center;
+          }
+          .form-field {
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
+          }
+          .form-field label {
+            margin-right: 8px;
+            white-space: nowrap;
+          }
+          .form-field .value {
+            border-bottom: 1px dotted #000;
+            min-width: 150px;
+            padding: 0 5px;
+          }
+          .checkbox {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #000;
+            display: inline-block;
+            margin: 0 5px;
+            vertical-align: middle;
+            position: relative;
+          }
+          .checkbox.checked::after {
+            content: '✓';
+            position: absolute;
+            top: -4px;
+            left: 2px;
+            font-size: 18px;
+            font-weight: bold;
+          }
+          .id-boxes {
+            display: flex;
+            gap: 8px;
+          }
+          .id-box {
+            width: 25px;
+            height: 30px;
+            border: 2px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+          }
+          .divider {
+            width: 10px;
+            height: 2px;
+            background: #000;
+            margin: 0 5px;
+            align-self: center;
+          }
+          .signature-section {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+          }
+          .signature-box {
+            text-align: center;
+            flex: 1;
+            margin: 0 20px;
+          }
+          .signature-line {
+            border-bottom: 1px dotted #000;
+            width: 200px;
+            margin: 40px auto 5px auto;
+          }
+          .declaration {
+            margin: 15px 0;
+            line-height: 1.8;
+            text-align: justify;
+            font-size: 13px;
+          }
+          .approval-section {
+            margin-top: 30px;
+            border: 2px solid #1e40af;
+            padding: 15px;
+            border-radius: 5px;
+            background: #f8fafc;
+          }
+          .footer-note {
+            text-align: right;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
           }
         </style>
       </head>
       <body>
-        <div class="header">
-          <div class="logo">พรรคกล้าธรรม</div>
-          <div class="title">รายละเอียดข้อมูลสมาชิก</div>
-          <div class="subtitle">ระบบจัดการสมาชิกพรรคการเมือง</div>
-        </div>
-        
-        <div class="section">
-          <div class="section-title">ข้อมูลส่วนตัว</div>
-          <div class="info-grid">
-            <div class="info-item">
-              <span class="label">ชื่อ-นามสกุล:</span>
-              <span class="value">${member.title}${member.titleOther ? member.titleOther : ''}${member.firstName} ${member.lastName}</span>
+        <div class="container">
+          <!-- Header Section -->
+          <div class="header">
+            <div class="logo-section">
+              <div class="logo">
+                <div class="logo-text">กธ</div>
+                <div class="logo-subtext">KLATHAM</div>
+                <div class="logo-subtext">กล้าธรรม</div>
+              </div>
+              
+              <div class="address-box">
+                <strong>สำนักงานใหญ่พรรคกล้าธรรม</strong><br>
+                เลขที่ 130/1 ซอยรัชดาภิเษก 54 ถนนรัชดาภิเษก<br>
+                แขวงลาดยาว เขตจตุจักร<br>
+                กรุงเทพมหานคร รหัสไปรษณีย์ 10900
+              </div>
+              
+              <div class="photo-box">
+                รูปถ่ายผู้สมัคร<br>
+                ขนาด 1 นิ้ว<br>
+                มีต่อด้านหลัง
+              </div>
             </div>
-            <div class="info-item">
-              <span class="label">เลขประจำตัวประชาชน:</span>
-              <span class="value">${member.idCard}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">วันเกิด:</span>
-              <span class="value">${format(new Date(member.birthDate), 'dd MMMM yyyy', { locale: th })}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">สัญชาติ:</span>
-              <span class="value">${member.nationality}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">ศาสนา:</span>
-              <span class="value">${member.religion}${member.religionOther ? ` (${member.religionOther})` : ''}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">วันหมดอายุบัตร:</span>
-              <span class="value">${format(new Date(member.cardExpiryDate), 'dd MMMM yyyy', { locale: th })}</span>
-            </div>
+            
+            <div class="title">ใบสมัครสมาชิกพรรคกล้าธรรม</div>
           </div>
-        </div>
 
-        <div class="section">
-          <div class="section-title">ที่อยู่</div>
-          <div class="address">
-            ${member.houseNumber} 
-            ${member.village ? `หมู่บ้าน${member.village}` : ''}
-            ${member.soi ? ` ซอย${member.soi}` : ''}
-            ${member.road ? ` ถนน${member.road}` : ''}
-            ${member.moo ? ` หมู่${member.moo}` : ''}
-            <br>
-            ตำบล${member.subDistrict} อำเภอ${member.district} จังหวัด${member.province} ${member.postalCode}
+          <!-- Personal Information Section -->
+          <div class="section-title">ข้อมูลทั่วไปของผู้สมัครสมาชิก</div>
+          
+          <div class="form-row">
+            <div class="form-field">
+              <label>นาย/นาง/นางสาว/อื่นๆ</label>
+              <span class="checkbox ${member.title === 'นาย' ? 'checked' : ''}"></span> นาย
+              <span class="checkbox ${member.title === 'นาง' ? 'checked' : ''}"></span> นาง
+              <span class="checkbox ${member.title === 'นางสาว' ? 'checked' : ''}"></span> นางสาว
+              <span class="checkbox ${!['นาย', 'นาง', 'นางสาว'].includes(member.title) ? 'checked' : ''}"></span> อื่นๆ
+            </div>
           </div>
-        </div>
+          
+          <div class="form-row">
+            <div class="form-field">
+              <label>ชื่อ</label>
+              <span class="value" style="min-width: 250px;">${member.firstName}</span>
+            </div>
+            <div class="form-field">
+              <label>นามสกุล</label>
+              <span class="value" style="min-width: 250px;">${member.lastName}</span>
+            </div>
+          </div>
 
-        <div class="section">
-          <div class="section-title">ข้อมูลติดต่อ</div>
-          <div class="info-grid">
-            <div class="info-item">
-              <span class="label">เบอร์โทรศัพท์:</span>
-              <span class="value">${member.phone}</span>
+          <div class="form-row">
+            <div class="form-field">
+              <label>ศาสนา</label>
+              <span class="value">${member.religion || 'พุทธ'}</span>
             </div>
-            <div class="info-item">
-              <span class="label">อีเมล:</span>
-              <span class="value">${member.email || 'ไม่ระบุ'}</span>
-            </div>
-          </div>
-          ${member.politicalOpinion ? `
-          <div class="info-item">
-            <span class="label">ความเห็นทางการเมือง:</span>
-            <div class="value" style="margin-top: 8px; padding: 10px; background: white; border-radius: 4px;">
-              ${member.politicalOpinion}
+            <div class="form-field">
+              <span class="checkbox checked"></span>
+              <label>สัญชาติไทยโดยการเกิด</label>
+              <span class="checkbox"></span>
+              <label>สัญชาติไทยโดยการแปลงสัญชาติซึ่งได้สัญชาติมาแล้วไม่น้อยกว่าห้าปี</label>
             </div>
           </div>
-          ` : ''}
-        </div>
 
-        <div class="section">
-          <div class="section-title">ข้อมูลการเป็นสมาชิก</div>
-          <div class="info-grid">
-            <div class="info-item">
-              <span class="label">ประเภทสมาชิก:</span>
-              <span class="value">${member.membershipType === 'yearly' ? 'สมาชิกรายปี (20 บาท/ปี)' : 'สมาชิกตลอดชีพ (200 บาท)'}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">สถานะ:</span>
-              <span class="status-badge status-${member.status === 'approved' ? 'approved' : member.status === 'pending' ? 'pending' : 'rejected'}">
-                ${member.status === 'approved' ? 'อนุมัติ' : member.status === 'pending' ? 'รอดำเนินการ' : 'ปฏิเสธ'}
-              </span>
-            </div>
-            <div class="info-item">
-              <span class="label">วันที่สมัคร:</span>
-              <span class="value">${format(new Date(member.createdAt), 'dd MMMM yyyy HH:mm', { locale: th })}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">อัปเดตล่าสุด:</span>
-              <span class="value">${format(new Date(member.updatedAt), 'dd MMMM yyyy HH:mm', { locale: th })}</span>
+          <div class="form-row">
+            <div class="form-field">
+              <label>เลขประจำตัวประชาชน</label>
+              <div class="id-boxes">
+                ${member.idCard.split('').map((digit, idx) => 
+                  (idx === 1 || idx === 5 || idx === 10 || idx === 12) 
+                    ? `<div class="divider"></div><div class="id-box">${digit}</div>` 
+                    : `<div class="id-box">${digit}</div>`
+                ).join('')}
+              </div>
             </div>
           </div>
-        </div>
 
-        ${((member as any).chargeId || (member as any).paymentStatus) ? `
-        <div class="section">
-          <div class="section-title">ข้อมูลการชำระเงิน</div>
-          <div class="document-info">
-            <div class="info-item">
-              <span class="label">สถานะการชำระเงิน:</span>
-              <span class="value">${(member as any).paymentStatus === 'completed' ? '✅ ชำระเงินแล้ว' : '⏳ รอการชำระเงิน'}</span>
+          <div class="form-row">
+            <div class="form-field">
+              <label>วันออกบัตร</label>
+              <span class="value">${(member as any).idCardIssueDate || '_______________'}</span>
             </div>
-            ${(member as any).chargeId ? `
-            <div class="info-item">
-              <span class="label">รหัสการชำระเงิน:</span>
-              <span class="value" style="font-family: monospace;">${(member as any).chargeId}</span>
-            </div>
-            ` : ''}
-            <div class="info-item">
-              <span class="label">จำนวนเงิน:</span>
-              <span class="value">${member.membershipType === 'yearly' ? '20 บาท' : '200 บาท'}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">ช่องทางการชำระ:</span>
-              <span class="value">PromptPay QR Code</span>
+            <div class="form-field">
+              <label>วันหมดอายุ</label>
+              <span class="value">${member.cardExpiryDate ? format(new Date(member.cardExpiryDate), 'dd/MM/yyyy') : '_______________'}</span>
             </div>
           </div>
-        </div>
-        ` : ''}
-        
-        <div class="footer">
-          <p><strong>พรรคกล้าธรรม</strong> - ระบบจัดการสมาชิกออนไลน์</p>
-          <p>พิมพ์เมื่อ: ${format(new Date(), 'dd MMMM yyyy HH:mm', { locale: th })} น.</p>
-          <p style="margin-top: 10px; font-size: 10px;">
-            เอกสารนี้สร้างขึ้นโดยอัตโนมัติจากระบบจัดการสมาชิกพรรคกล้าธรรม<br>
-            สำหรับการใช้งานภายในองค์กรเท่านั้น
-          </p>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label>เกิดวันที่</label>
+              <span class="value">${member.birthDate ? format(new Date(member.birthDate), 'dd', { locale: th }) : '____'}</span>
+            </div>
+            <div class="form-field">
+              <label>เดือน</label>
+              <span class="value">${member.birthDate ? format(new Date(member.birthDate), 'MMMM', { locale: th }) : '_______________'}</span>
+            </div>
+            <div class="form-field">
+              <label>พ.ศ.</label>
+              <span class="value">${member.birthDate ? (new Date(member.birthDate).getFullYear() + 543) : '______'}</span>
+            </div>
+            <div class="form-field">
+              <label>อายุ</label>
+              <span class="value">${member.birthDate ? (new Date().getFullYear() - new Date(member.birthDate).getFullYear()) : '____'}</span>
+              <label>ปี</label>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field" style="width: 100%;">
+              <label>ที่อยู่ตามทะเบียนบ้าน บ้านเลขที่</label>
+              <span class="value" style="min-width: 100px;">${member.houseNumber || ''}</span>
+              <label>หมู่บ้าน</label>
+              <span class="value" style="min-width: 150px;">${member.village || ''}</span>
+              <label>ซอย</label>
+              <span class="value" style="min-width: 100px;">${member.soi || ''}</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field" style="width: 100%;">
+              <label>ถนน</label>
+              <span class="value" style="min-width: 120px;">${member.road || ''}</span>
+              <label>หมู่ที่</label>
+              <span class="value" style="min-width: 60px;">${member.moo || ''}</span>
+              <label>แขวง/ตำบล</label>
+              <span class="value" style="min-width: 150px;">${member.subDistrict}</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label>เขต/อำเภอ</label>
+              <span class="value" style="min-width: 150px;">${member.district}</span>
+            </div>
+            <div class="form-field">
+              <label>จังหวัด</label>
+              <span class="value" style="min-width: 150px;">${member.province}</span>
+            </div>
+            <div class="form-field">
+              <label>รหัสไปรษณีย์</label>
+              <span class="value">${member.postalCode}</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label>เบอร์โทรศัพท์ (มือถือ)</label>
+              <span class="value" style="min-width: 150px;">${member.phone}</span>
+            </div>
+            <div class="form-field">
+              <label>เบอร์โทรศัพท์ (บ้าน)</label>
+              <span class="value" style="min-width: 150px;">${(member as any).homePhone || ''}</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label>Email</label>
+              <span class="value" style="min-width: 250px;">${member.email || ''}</span>
+            </div>
+            <div class="form-field">
+              <label>ID Line</label>
+              <span class="value" style="min-width: 150px;">${(member as any).lineId || ''}</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field" style="width: 100%;">
+              <label>ความคิดเห็นทางการเมืองของผู้สมัคร (ถ้ามี)</label>
+            </div>
+          </div>
+          <div style="border-bottom: 1px dotted #000; min-height: 60px; padding: 5px;">
+            ${member.politicalOpinion || ''}
+          </div>
+
+          <!-- Declaration Section -->
+          <div class="declaration">
+            ข้าพเจ้าขอรับรองว่า เงินค่าบำรุงพรรคเป็นเงินของข้าพเจ้าจริง และข้าพเจ้าได้ตรวจสอบคุณสมบัติและลักษณะต้องห้ามตามที่ระบุไว้ด้านหลังใบสมัครนี้
+            โดยครบถ้วนถูกต้องทุกประการแล้ว ขอยืนยันว่าข้าพเจ้าเป็นบุคคลซึ่งมีคุณสมบัติและไม่มีลักษณะต้องห้ามการเป็นสมาชิกพรรคการเมืองตามมาตรา 24 แห่งพระราชบัญญัติ
+            ประกอบรัฐธรรมนูญว่าด้วยพรรคการเมือง (ฉบับที่ 2) พ.ศ. 2566
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label>ข้าพเจ้าได้ชำระค่าบำรุงพรรค</label>
+              <span class="checkbox ${member.membershipType === 'yearly' ? 'checked' : ''}"></span>
+              <label>รายปี 20 บาท</label>
+              <span class="checkbox ${member.membershipType === 'lifetime' ? 'checked' : ''}"></span>
+              <label>ตลอดชีพ 200 บาท</label>
+              <label>มาพร้อมกันนี้แล้ว</label>
+            </div>
+          </div>
+
+          <div class="signature-section">
+            <div class="signature-box">
+              <div>ลงนาม _________________________________ ผู้สมัคร</div>
+              <div style="margin-top: 10px;">( ${member.firstName} ${member.lastName} )</div>
+              <div style="margin-top: 10px;">วันที่ _______ เดือน ______________ พ.ศ. _______</div>
+            </div>
+          </div>
+
+          <!-- Approval Section -->
+          <div class="approval-section">
+            <div class="section-title" style="margin-top: 0;">สำหรับพรรคการเมือง</div>
+            
+            <div class="declaration">
+              ข้าพเจ้านายทะเบียนสมาชิกพรรคกล้าธรรมได้พิจารณาและตรวจสอบคุณสมบัติแล้วเห็นว่ามีคุณสมบัติและไม่มีลักษณะต้องห้ามตาม
+              มาตรา 24 แห่งพระราชบัญญัติประกอบรัฐธรรมนูญว่าด้วยพรรคการเมือง (ฉบับที่ 2) พ.ศ. 2566 ตามที่ผู้สมัครรับรอง
+            </div>
+
+            <div class="signature-section">
+              <div class="signature-box">
+                <div>ลงนาม _________________________________</div>
+                <div style="margin-top: 10px;">( _________________________________ )</div>
+                <div style="margin-top: 10px;">นายทะเบียนสมาชิกพรรคกล้าธรรม</div>
+              </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px; padding: 10px; border: 2px solid #1e40af; border-radius: 5px; background: ${
+              member.status === 'approved' ? '#C6F6D5' : 
+              member.status === 'pending' ? '#FEFCBF' : 
+              '#FED7D7'
+            };">
+              <strong style="font-size: 16px;">สถานะการสมัคร: ${
+                member.status === 'approved' ? 'อนุมัติแล้ว ✓' : 
+                member.status === 'pending' ? 'รอดำเนินการ' : 
+                'ปฏิเสธ'
+              }</strong>
+            </div>
+          </div>
+
+          <div class="footer-note">
+            <strong>หมายเหตุ:</strong> มีต่อด้านหลัง<br>
+            พิมพ์เมื่อ: ${format(new Date(), 'dd MMMM yyyy HH:mm', { locale: th })} น.<br>
+            เอกสารนี้สร้างจากระบบจัดการสมาชิกพรรคกล้าธรรม
+          </div>
         </div>
       </body>
       </html>
@@ -478,16 +668,16 @@ export const AdminPanel: React.FC = () => {
     // เปิดหน้าต่างใหม่และพิมพ์
     const printWindow = window.open('', '_blank');
     if (printWindow) {
-      printWindow.document.write(memberHtml);
+      printWindow.document.write(formHtml);
       printWindow.document.close();
       printWindow.focus();
       setTimeout(() => {
         printWindow.print();
-      }, 250);
+      }, 500);
     }
   };
 
-  // ฟังก์ชั่นสร้าง PDF รายชื่อสมาชิกทั้งหมด
+  // ฟังก์ชันสร้าง PDF รายชื่อสมาชิกทั้งหมด (เก็บไว้สำหรับการพิมพ์รายงาน)
   const generateBulkMemberPDF = (members: MemberWithId[]) => {
     const bulkHtml = `
       <!DOCTYPE html>
@@ -1178,7 +1368,7 @@ export const AdminPanel: React.FC = () => {
                         variant="ghost"
                         size="sm"
                         onClick={() => generateMemberPDF(member)}
-                        title="พิมพ์ PDF รายละเอียดสมาชิก"
+                        title="พิมพ์ PDF ใบสมัครสมาชิก"
                         className="text-blue-600 hover:text-blue-800"
                       >
                         <FileText className="w-4 h-4" />
