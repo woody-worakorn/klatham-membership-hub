@@ -17,7 +17,9 @@ import {
   CheckCircle, 
   XCircle, 
   Clock,
-  Download
+  Download,
+  FileText,
+  Printer
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { th } from 'date-fns/locale';
@@ -229,6 +231,481 @@ export const AdminPanel: React.FC = () => {
         description: 'ไม่สามารถดาวน์โหลดใบเสร็จได้',
         variant: 'destructive'
       });
+    }
+  };
+
+  // ฟังก์ชั่นสร้าง PDF รายละเอียดสมาชิก
+  const generateMemberPDF = (member: MemberWithId) => {
+    const memberHtml = `
+      <!DOCTYPE html>
+      <html lang="th">
+      <head>
+        <meta charset="UTF-8">
+        <title>รายละเอียดสมาชิก - ${member.title}${member.firstName} ${member.lastName}</title>
+        <style>
+          @media print {
+            body { -webkit-print-color-adjust: exact; }
+            .no-print { display: none !important; }
+          }
+          body { 
+            font-family: 'Sarabun', 'Arial', sans-serif; 
+            margin: 40px; 
+            line-height: 1.6;
+            color: #333;
+          }
+          .header { 
+            text-align: center; 
+            margin-bottom: 40px; 
+            padding-bottom: 20px;
+            border-bottom: 3px solid #63D777;
+          }
+          .logo { 
+            font-size: 28px; 
+            font-weight: bold; 
+            color: #63D777; 
+            margin-bottom: 10px;
+          }
+          .title { 
+            font-size: 24px; 
+            margin: 10px 0; 
+            color: #2D3748;
+          }
+          .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+          }
+          .section { 
+            margin: 30px 0; 
+            padding: 20px;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            background: #F7FAFC;
+          }
+          .section-title { 
+            font-size: 18px; 
+            font-weight: bold; 
+            color: #2D3748;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #63D777;
+          }
+          .info-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px; 
+            margin: 15px 0;
+          }
+          .info-item { 
+            margin: 8px 0; 
+          }
+          .label { 
+            font-weight: bold; 
+            color: #4A5568;
+            display: inline-block;
+            min-width: 140px;
+          }
+          .value { 
+            color: #2D3748;
+          }
+          .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+          }
+          .status-approved { background: #C6F6D5; color: #22543D; }
+          .status-pending { background: #FEFCBF; color: #744210; }
+          .status-rejected { background: #FED7D7; color: #742A2A; }
+          .footer { 
+            margin-top: 40px; 
+            text-align: center; 
+            font-size: 12px; 
+            color: #666;
+            border-top: 1px solid #E2E8F0;
+            padding-top: 20px;
+          }
+          .address { 
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #63D777;
+          }
+          .document-info {
+            background: #EDF2F7;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="logo">พรรคกล้าธรรม</div>
+          <div class="title">รายละเอียดข้อมูลสมาชิก</div>
+          <div class="subtitle">ระบบจัดการสมาชิกพรรคการเมือง</div>
+        </div>
+        
+        <div class="section">
+          <div class="section-title">ข้อมูลส่วนตัว</div>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="label">ชื่อ-นามสกุล:</span>
+              <span class="value">${member.title}${member.titleOther ? member.titleOther : ''}${member.firstName} ${member.lastName}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">เลขประจำตัวประชาชน:</span>
+              <span class="value">${member.idCard}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">วันเกิด:</span>
+              <span class="value">${format(new Date(member.birthDate), 'dd MMMM yyyy', { locale: th })}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">สัญชาติ:</span>
+              <span class="value">${member.nationality}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">ศาสนา:</span>
+              <span class="value">${member.religion}${member.religionOther ? ` (${member.religionOther})` : ''}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">วันหมดอายุบัตร:</span>
+              <span class="value">${format(new Date(member.cardExpiryDate), 'dd MMMM yyyy', { locale: th })}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">ที่อยู่</div>
+          <div class="address">
+            ${member.houseNumber} 
+            ${member.village ? `หมู่บ้าน${member.village}` : ''}
+            ${member.soi ? ` ซอย${member.soi}` : ''}
+            ${member.road ? ` ถนน${member.road}` : ''}
+            ${member.moo ? ` หมู่${member.moo}` : ''}
+            <br>
+            ตำบล${member.subDistrict} อำเภอ${member.district} จังหวัด${member.province} ${member.postalCode}
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">ข้อมูลติดต่อ</div>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="label">เบอร์โทรศัพท์:</span>
+              <span class="value">${member.phone}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">อีเมล:</span>
+              <span class="value">${member.email || 'ไม่ระบุ'}</span>
+            </div>
+          </div>
+          ${member.politicalOpinion ? `
+          <div class="info-item">
+            <span class="label">ความเห็นทางการเมือง:</span>
+            <div class="value" style="margin-top: 8px; padding: 10px; background: white; border-radius: 4px;">
+              ${member.politicalOpinion}
+            </div>
+          </div>
+          ` : ''}
+        </div>
+
+        <div class="section">
+          <div class="section-title">ข้อมูลการเป็นสมาชิก</div>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="label">ประเภทสมาชิก:</span>
+              <span class="value">${member.membershipType === 'yearly' ? 'สมาชิกรายปี (20 บาท/ปี)' : 'สมาชิกตลอดชีพ (200 บาท)'}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">สถานะ:</span>
+              <span class="status-badge status-${member.status === 'approved' ? 'approved' : member.status === 'pending' ? 'pending' : 'rejected'}">
+                ${member.status === 'approved' ? 'อนุมัติ' : member.status === 'pending' ? 'รอดำเนินการ' : 'ปฏิเสธ'}
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="label">วันที่สมัคร:</span>
+              <span class="value">${format(new Date(member.createdAt), 'dd MMMM yyyy HH:mm', { locale: th })}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">อัปเดตล่าสุด:</span>
+              <span class="value">${format(new Date(member.updatedAt), 'dd MMMM yyyy HH:mm', { locale: th })}</span>
+            </div>
+          </div>
+        </div>
+
+        ${((member as any).chargeId || (member as any).paymentStatus) ? `
+        <div class="section">
+          <div class="section-title">ข้อมูลการชำระเงิน</div>
+          <div class="document-info">
+            <div class="info-item">
+              <span class="label">สถานะการชำระเงิน:</span>
+              <span class="value">${(member as any).paymentStatus === 'completed' ? '✅ ชำระเงินแล้ว' : '⏳ รอการชำระเงิน'}</span>
+            </div>
+            ${(member as any).chargeId ? `
+            <div class="info-item">
+              <span class="label">รหัสการชำระเงิน:</span>
+              <span class="value" style="font-family: monospace;">${(member as any).chargeId}</span>
+            </div>
+            ` : ''}
+            <div class="info-item">
+              <span class="label">จำนวนเงิน:</span>
+              <span class="value">${member.membershipType === 'yearly' ? '20 บาท' : '200 บาท'}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">ช่องทางการชำระ:</span>
+              <span class="value">PromptPay QR Code</span>
+            </div>
+          </div>
+        </div>
+        ` : ''}
+        
+        <div class="footer">
+          <p><strong>พรรคกล้าธรรม</strong> - ระบบจัดการสมาชิกออนไลน์</p>
+          <p>พิมพ์เมื่อ: ${format(new Date(), 'dd MMMM yyyy HH:mm', { locale: th })} น.</p>
+          <p style="margin-top: 10px; font-size: 10px;">
+            เอกสารนี้สร้างขึ้นโดยอัตโนมัติจากระบบจัดการสมาชิกพรรคกล้าธรรม<br>
+            สำหรับการใช้งานภายในองค์กรเท่านั้น
+          </p>
+        </div>
+      </body>
+      </html>
+    `;
+    
+    // เปิดหน้าต่างใหม่และพิมพ์
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(memberHtml);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => {
+        printWindow.print();
+      }, 250);
+    }
+  };
+
+  // ฟังก์ชั่นสร้าง PDF รายชื่อสมาชิกทั้งหมด
+  const generateBulkMemberPDF = (members: MemberWithId[]) => {
+    const bulkHtml = `
+      <!DOCTYPE html>
+      <html lang="th">
+      <head>
+        <meta charset="UTF-8">
+        <title>รายชื่อสมาชิกพรรคกล้าธรรม</title>
+        <style>
+          @media print {
+            body { -webkit-print-color-adjust: exact; }
+            .no-print { display: none !important; }
+          }
+          body { 
+            font-family: 'Sarabun', 'Arial', sans-serif; 
+            margin: 20px; 
+            line-height: 1.4;
+            color: #333;
+            font-size: 12px;
+          }
+          .header { 
+            text-align: center; 
+            margin-bottom: 30px; 
+            padding-bottom: 15px;
+            border-bottom: 3px solid #63D777;
+          }
+          .logo { 
+            font-size: 24px; 
+            font-weight: bold; 
+            color: #63D777; 
+            margin-bottom: 8px;
+          }
+          .title { 
+            font-size: 20px; 
+            margin: 8px 0; 
+            color: #2D3748;
+          }
+          .subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+          }
+          .summary {
+            background: #F7FAFC;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid #63D777;
+          }
+          .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            text-align: center;
+          }
+          .summary-item {
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #E2E8F0;
+          }
+          .summary-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2D3748;
+          }
+          .summary-label {
+            font-size: 11px;
+            color: #666;
+            margin-top: 4px;
+          }
+          table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px;
+            font-size: 11px;
+          }
+          th, td { 
+            border: 1px solid #E2E8F0; 
+            padding: 8px 6px; 
+            text-align: left;
+          }
+          th { 
+            background: #63D777; 
+            color: white; 
+            font-weight: bold;
+            text-align: center;
+          }
+          tr:nth-child(even) { 
+            background: #F7FAFC; 
+          }
+          tr:hover { 
+            background: #E6FFFA; 
+          }
+          .status-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 9px;
+            font-weight: bold;
+            text-transform: uppercase;
+          }
+          .status-approved { background: #C6F6D5; color: #22543D; }
+          .status-pending { background: #FEFCBF; color: #744210; }
+          .status-rejected { background: #FED7D7; color: #742A2A; }
+          .membership-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 9px;
+            font-weight: bold;
+            background: #E2E8F0;
+            color: #4A5568;
+          }
+          .footer { 
+            margin-top: 30px; 
+            text-align: center; 
+            font-size: 10px; 
+            color: #666;
+            border-top: 1px solid #E2E8F0;
+            padding-top: 15px;
+          }
+          .page-break {
+            page-break-before: always;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="logo">พรรคกล้าธรรม</div>
+          <div class="title">รายชื่อสมาชิกพรรคการเมือง</div>
+          <div class="subtitle">ระบบจัดการสมาชิกออนไลน์</div>
+        </div>
+        
+        <div class="summary">
+          <h3 style="margin: 0 0 15px 0; color: #2D3748;">สรุปข้อมูลสมาชิก</h3>
+          <div class="summary-grid">
+            <div class="summary-item">
+              <div class="summary-number">${members.length}</div>
+              <div class="summary-label">สมาชิกทั้งหมด</div>
+            </div>
+            <div class="summary-item">
+              <div class="summary-number">${members.filter(m => m.status === 'approved').length}</div>
+              <div class="summary-label">อนุมัติแล้ว</div>
+            </div>
+            <div class="summary-item">
+              <div class="summary-number">${members.filter(m => m.status === 'pending').length}</div>
+              <div class="summary-label">รอดำเนินการ</div>
+            </div>
+            <div class="summary-item">
+              <div class="summary-number">${members.filter(m => m.membershipType === 'yearly').length}</div>
+              <div class="summary-label">สมาชิกรายปี</div>
+            </div>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th width="5%">ลำดับ</th>
+              <th width="25%">ชื่อ-นามสกุล</th>
+              <th width="15%">เลขบัตรประชาชน</th>
+              <th width="12%">เบอร์โทรศัพท์</th>
+              <th width="20%">ที่อยู่</th>
+              <th width="10%">ประเภท</th>
+              <th width="8%">สถานะ</th>
+              <th width="10%">วันที่สมัคร</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${members.map((member, index) => `
+              <tr>
+                <td style="text-align: center;">${index + 1}</td>
+                <td>${member.title}${member.firstName} ${member.lastName}</td>
+                <td style="font-family: monospace;">${member.idCard}</td>
+                <td>${member.phone}</td>
+                <td style="font-size: 10px;">
+                  ${member.subDistrict}, ${member.district}<br>
+                  ${member.province} ${member.postalCode}
+                </td>
+                <td style="text-align: center;">
+                  <span class="membership-badge">
+                    ${member.membershipType === 'yearly' ? 'รายปี' : 'ตลอดชีพ'}
+                  </span>
+                </td>
+                <td style="text-align: center;">
+                  <span class="status-badge status-${member.status === 'approved' ? 'approved' : member.status === 'pending' ? 'pending' : 'rejected'}">
+                    ${member.status === 'approved' ? 'อนุมัติ' : member.status === 'pending' ? 'รอ' : 'ปฏิเสธ'}
+                  </span>
+                </td>
+                <td style="text-align: center;">
+                  ${format(new Date(member.createdAt), 'dd/MM/yy', { locale: th })}
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        
+        <div class="footer">
+          <p><strong>พรรคกล้าธรรม</strong> - ระบบจัดการสมาชิกออนไลน์</p>
+          <p>พิมพ์เมื่อ: ${format(new Date(), 'dd MMMM yyyy HH:mm', { locale: th })} น.</p>
+          <p style="margin-top: 8px; font-size: 9px;">
+            เอกสารนี้สร้างขึ้นโดยอัตโนมัติจากระบบจัดการสมาชิกพรรคกล้าธรรม<br>
+            สำหรับการใช้งานภายในองค์กรเท่านั้น | จำนวนสมาชิกในรายงาน: ${members.length} คน
+          </p>
+        </div>
+      </body>
+      </html>
+    `;
+    
+    // เปิดหน้าต่างใหม่และพิมพ์
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(bulkHtml);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => {
+        printWindow.print();
+      }, 500);
     }
   };
 
@@ -556,10 +1033,21 @@ export const AdminPanel: React.FC = () => {
             จัดการข้อมูลสมาชิกพรรคกล้าธรรม
           </p>
         </div>
-        <Button onClick={exportToCSV} variant="outline" className="flex items-center gap-2">
-          <Download className="w-4 h-4" />
-          ส่งออกข้อมูล CSV
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={exportToCSV} variant="outline" className="flex items-center gap-2">
+            <Download className="w-4 h-4" />
+            ส่งออกข้อมูล CSV
+          </Button>
+          <Button 
+            type="button"
+            onClick={() => generateBulkMemberPDF(filteredMembers)} 
+            variant="outline" 
+            className="flex items-center gap-2 text-blue-600 hover:text-blue-800"
+          >
+            <Printer className="w-4 h-4" />
+            พิมพ์รายชื่อสมาชิก PDF
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -674,22 +1162,36 @@ export const AdminPanel: React.FC = () => {
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <Button
+                        type="button"
                         variant="ghost"
                         size="sm"
                         onClick={() => {
                           setSelectedMember(member);
                           setIsViewDialogOpen(true);
                         }}
+                        title="ดูรายละเอียด"
                       >
                         <Eye className="w-4 h-4" />
                       </Button>
                       <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => generateMemberPDF(member)}
+                        title="พิมพ์ PDF รายละเอียดสมาชิก"
+                        className="text-blue-600 hover:text-blue-800"
+                      >
+                        <FileText className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        type="button"
                         variant="ghost"
                         size="sm"
                         onClick={() => {
                           setSelectedMember(member);
                           setIsEditDialogOpen(true);
                         }}
+                        title="แก้ไขข้อมูล"
                       >
                         <Edit className="w-4 h-4" />
                       </Button>
